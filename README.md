@@ -14,6 +14,8 @@ complexity in inversely planned volumetric modulated arc therapy. Med Phys. 2012
 
 <a href="https://pypi.org/project/dvha-mlca/">
         <img src="https://img.shields.io/pypi/v/dvha-mlca.svg" alt="PyPi Version" /></a>
+<a href="https://lgtm.com/projects/g/cutright/DVHA-MLCA/context:python">
+        <img src="https://img.shields.io/lgtm/grade/python/g/cutright/DVHA-MLCA.svg?logo=lgtm&label=code%20quality" alt="LGTM Code Quality" /></a>
 
 Installation
 ---------
