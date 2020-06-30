@@ -1,6 +1,6 @@
 # Change log of DVH Analytics MLC Analyzer
 
-v0.1rc2 (TBD)
+v0.2dev1 (TBD)
 --------------------
  - Add verbose mode
 
