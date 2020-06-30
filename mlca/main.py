@@ -21,11 +21,15 @@ from mlca._version import __version__
 class PlanSet:
     def __init__(self, file_paths, **kwargs):
 
+        verbose = 'verbose' in kwargs and kwargs['verbose']
+
         self.plans = []
         plan_count = len(file_paths)
         for i, file_path in enumerate(file_paths):
             print('Analyzing (%s of %s): %s' % (i+1, plan_count, file_path))
             self.plans.append(Plan(file_path, **kwargs))
+            if verbose:
+                print(self.plans[-1], '\n')
 
         self.summary_table = [','.join(COLUMNS)]
         for plan in self.plans:
@@ -88,6 +92,11 @@ def main():
                             help='Print the DVHA-MLCA version',
                             default=False,
                             action='store_true')
+    cmd_parser.add_argument('-v', '--verbose',
+                            dest='verbose',
+                            help='Print the DVHA-MLCA version',
+                            default=False,
+                            action='store_true')
     args = cmd_parser.parse_args()
 
     if args.print_version:
@@ -102,6 +111,9 @@ def main():
         output_file = args.output_file if args.output_file is not None else default_file
 
         plan_analyzer = PlanSet(**cmd_options)
+
+        if args.verbose:
+            print(plan_analyzer.csv.replace(',', '\t'))
 
         with open(output_file, 'w') as doc:
             doc.write(plan_analyzer.csv)

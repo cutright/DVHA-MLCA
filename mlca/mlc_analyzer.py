@@ -65,7 +65,7 @@ class Plan:
         self.study_instance_uid = '"%s"' % rt_plan.StudyInstanceUID
         self.tps = '"%s %s"' % (rt_plan.Manufacturer, rt_plan.ManufacturerModelName)
 
-        self.complexity_scores = [float(fx_grp.complexity_score) for fx_grp in self.fx_group]
+        self.younge_complexity_scores = [float(fx_grp.younge_complexity_score) for fx_grp in self.fx_group]
 
         self.summary = [{'Patient Name': self.patient_name,
                          'Patient MRN': self.patient_id,
@@ -78,7 +78,7 @@ class Plan:
                          'Plan MUs': "%0.1f" % fx_grp.fx_mu,
                          'Beam Count(s)': str(fx_grp.beam_count),
                          'Control Point(s)': str(sum(fx_grp.cp_counts)),
-                         'Complexity Score(s)': "%0.3f" % self.complexity_scores[f],
+                         'Complexity Score(s)': "%0.3f" % self.younge_complexity_scores[f],
                          'File Name': '"%s"' % self.rt_plan_file}
                         for f, fx_grp in enumerate(self.fx_group)]
 
@@ -92,7 +92,7 @@ class Plan:
                    'Plan MUs:            %s' % ', '.join(["%0.1f" % fx_grp.fx_mu for fx_grp in self.fx_group]),
                    'Beam Count(s):       %s' % ', '.join([str(fx_grp.beam_count) for fx_grp in self.fx_group]),
                    'Control Point(s):    %s' % ', '.join([str(sum(fx_grp.cp_counts)) for fx_grp in self.fx_group]),
-                   'Complexity Score(s): %s' % ', '.join(["%0.3f" % cs for cs in self.complexity_scores])]
+                   'Complexity Score(s): %s' % ', '.join(["%0.3f" % cs for cs in self.younge_complexity_scores])]
         return '\n'.join(summary)
 
     def __repr__(self):
@@ -139,7 +139,7 @@ class FxGroup:
 
         self.update_missing_jaws()
 
-        self.complexity_score = np.sum(np.array([np.sum(beam.complexity_scores) for beam in self.beam]))
+        self.younge_complexity_score = np.sum(np.array([np.sum(beam.younge_complexity_scores) for beam in self.beam]))
 
     def __eq__(self, other):
         for i, beam in enumerate(self.beam):
@@ -194,26 +194,19 @@ class Beam:
         self.meter_set = meter_set
         self.control_point_meter_set = np.append([0], np.diff(np.array([cp.cum_mu for cp in self.control_point])))
 
-        if hasattr(beam_dataset, 'BeamDescription'):
-            self.name = beam_dataset.BeamDescription
-        else:
-            self.name = beam_dataset.BeamName
+        self.name = getattr(beam_dataset, 'BeamDescription',
+                            getattr(beam_dataset, 'BeamName', 'Unknown'))
 
-        cum_mu = [cp.cum_mu * self.meter_set for cp in self.control_point]
-        cp_mu = np.diff(np.array(cum_mu)).tolist() + [0]
-        x_paths = np.array([get_xy_path_lengths(cp)[0] for cp in self.aperture])
-        y_paths = np.array([get_xy_path_lengths(cp)[1] for cp in self.aperture])
-        area = [cp.area for cp in self.aperture]
-        c1, c2 = self.options['complexity_weight_x'], self.options['complexity_weight_y']
-        self.complexity_scores = np.divide(np.multiply(np.add(c1*x_paths, c2*y_paths), cp_mu), area) / self.meter_set
-        # Complexity score based on:
-        # Younge KC, Matuszak MM, Moran JM, McShan DL, Fraass BA, Roberts DA. Penalization of aperture
-        # complexity in inversely planned volumetric modulated arc therapy. Med Phys. 2012;39(11):7160–70.
+        self.cp_mu = np.diff(np.array(self.cum_mu)).tolist() + [0]
+        self.perimeter_x = np.array([cp.perimeter_x for cp in self.control_point])
+        self.perimeter_y = np.array([cp.perimeter_y for cp in self.control_point])
+        self.perimeter = np.array([cp.perimeter for cp in self.control_point])
+        self.area = [cp.area for cp in self.aperture]
 
         self.summary = {'cp': range(1, len(self.control_point)+1),
                         'cum_mu_frac': [cp.cum_mu for cp in self.control_point],
-                        'cum_mu': cum_mu,
-                        'cp_mu': cp_mu,
+                        'cum_mu': self.cum_mu,
+                        'cp_mu': self.cp_mu,
                         'gantry': self.gantry_angle,
                         'collimator': self.collimator_angle,
                         'couch': self.couch_angle,
@@ -221,11 +214,11 @@ class Beam:
                         'jaw_x2': [j['x_max']/10 for j in self.jaws],
                         'jaw_y1': [j['y_min']/10 for j in self.jaws],
                         'jaw_y2': [j['y_max']/10 for j in self.jaws],
-                        'area': np.divide(area, 100.).tolist(),
-                        'x_perim': np.divide(x_paths, 10.).tolist(),
-                        'y_perim': np.divide(y_paths, 10.).tolist(),
-                        'perim': np.divide(np.add(x_paths, y_paths), 10.).tolist(),
-                        'cmp_score': self.complexity_scores.tolist()}
+                        'area': np.divide(self.area, 100.).tolist(),
+                        'x_perim': np.divide(self.perimeter_x, 10.).tolist(),
+                        'y_perim': np.divide(self.perimeter_y, 10.).tolist(),
+                        'perim': np.divide(self.perimeter, 10.).tolist(),
+                        'cmp_score': self.younge_complexity_scores.tolist()}
 
         for key in self.summary:
             if len(self.summary[key]) == 1:
@@ -259,6 +252,19 @@ class Beam:
     def couch_angle(self):
         return [float(cp.PatientSupportAngle) for cp in self.cp_seq if hasattr(cp, 'PatientSupportAngle')]
 
+    @property
+    def cum_mu(self):
+        return [cp.cum_mu * self.meter_set for cp in self.control_point]
+
+    @property
+    def younge_complexity_scores(self):
+        # Complexity score based on:
+        # Younge KC, Matuszak MM, Moran JM, McShan DL, Fraass BA, Roberts DA. Penalization of aperture
+        # complexity in inversely planned volumetric modulated arc therapy. Med Phys. 2012;39(11):7160–70.
+        c1, c2 = self.options['complexity_weight_x'], self.options['complexity_weight_y']
+        return np.divide(np.multiply(np.add(c1 * self.perimeter_x, c2 * self.perimeter_y), self.cp_mu),
+                         self.area) / self.meter_set
+
 
 class ControlPoint:
     """
@@ -291,6 +297,11 @@ class ControlPoint:
             if getattr(self, leaf_type, None) is not None:
                 self.mlc = getattr(self, leaf_type)
                 self.leaf_type = leaf_type
+
+        path_lengths = get_xy_path_lengths(self.aperture)
+        self.perimeter_x = path_lengths[0]
+        self.perimeter_y = path_lengths[1]
+        self.perimeter = path_lengths[0] + path_lengths[1]
 
     def __eq__(self, other):
         if abs(self.cum_mu - other.cum_mu) > 0.00001:

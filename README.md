@@ -27,7 +27,7 @@ If you've installed via pip or setup.py, launch from your terminal with:
 ```
 mlca <init-scanning-directory>
 ```
-If you've cloned the project, but did not run the setup.py installer, launch DVHA with:
+If you've cloned the project, but did not run the setup.py installer, launch DVHA-MLCA with:
 ```
 python mlca/main.py <init-scanning-directory>
 ```
