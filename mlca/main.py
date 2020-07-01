@@ -58,7 +58,34 @@ def get_file_paths(init_dir):
     return file_paths
 
 
-def main():
+def main(init_dir=None, output_file=None, verbose=False, print_version=False, **kwargs):
+
+    if print_version:
+        print('DVHA MLC Analyzer: dvha-mlca v%s' % __version__)
+
+    if init_dir is not None:
+
+        kwargs['init_dir'] = init_dir
+        kwargs['output_file'] = output_file
+        kwargs['verbose'] = verbose
+        kwargs['file_paths'] = get_file_paths(init_dir)
+
+        time_stamp = str(datetime.now()).replace(':', '-').replace('.', '-')
+        default_file = "dvha_mlca_%s_results_%s.csv" % (__version__, time_stamp)
+        output_file = output_file if output_file is not None else default_file
+
+        plan_analyzer = PlanSet(**kwargs)
+
+        if verbose:
+            print(plan_analyzer.csv.replace(',', '\t'))
+
+        with open(output_file, 'w') as doc:
+            doc.write(plan_analyzer.csv)
+    elif not print_version:
+        print("mlca: error: the following arguments are required: init_dir")
+
+
+if __name__ == '__main__':
     cmd_parser = argparse.ArgumentParser(description="Command line DVHA MLC Analyzer")
     cmd_parser.add_argument('init_dir', nargs='?',
                             help='Directory containing DICOM-RT Plan files',
@@ -94,32 +121,8 @@ def main():
                             action='store_true')
     cmd_parser.add_argument('-v', '--verbose',
                             dest='verbose',
-                            help='Print the DVHA-MLCA version',
+                            help='Print final results and plan summaries as they are analyzed',
                             default=False,
                             action='store_true')
-    args = cmd_parser.parse_args()
-
-    if args.print_version:
-        print('DVHA MLC Analyzer: dvha-mlca v%s' % __version__)
-
-    if args.init_dir is not None:
-        cmd_options = {key: getattr(args, key) for key in list(DEFAULT_OPTIONS)}
-        cmd_options['file_paths'] = get_file_paths(args.init_dir)
-
-        time_stamp = str(datetime.now()).replace(':', '-').replace('.', '-')
-        default_file = "dvha_mlca_%s_results_%s.csv" % (__version__, time_stamp)
-        output_file = args.output_file if args.output_file is not None else default_file
-
-        plan_analyzer = PlanSet(**cmd_options)
-
-        if args.verbose:
-            print(plan_analyzer.csv.replace(',', '\t'))
-
-        with open(output_file, 'w') as doc:
-            doc.write(plan_analyzer.csv)
-    elif not args.print_version:
-        print("mlca: error: the following arguments are required: init_dir")
-
-
-if __name__ == '__main__':
-    main()
+    args = vars(cmd_parser.parse_args())
+    main(**args)
