@@ -1,0 +1,17 @@
+# Distribution / packaging
+build/
+dist/
+downloads/
+*.egg-info/
+*.egg
+
+# Sphinx documentation
+docs/_build/
+docs/build
+
+# Coverage tests
+.pytest_cache/
+htmlcov/
+
+# Mac OS X cruft
+.DS_Store

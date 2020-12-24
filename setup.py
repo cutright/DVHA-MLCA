@@ -17,7 +17,7 @@ from mlca._version import __version__
 with open('requirements.txt', 'r') as doc:
     requires = [line.strip() for line in doc]
 
-with open('README.md', 'r') as doc:
+with open('README.rst', 'r') as doc:
     long_description = doc.read()
 
 
