@@ -12,10 +12,7 @@ every method and property available.
 
     >>> from mlca.mlc_analyzer import Plan
     >>> plan = Plan('rtplan.dcm')
-    >>> for fx_grp in plan.summary:
-            for key, value in fx_grp.items():
-                print("%s: %s" % (key, value))
-            print('\n')
+    >>> plan
 
 
 Output will look like:
@@ -42,9 +39,8 @@ You can access specific beam information. Some examples are shown below.
 
     >>> beam = plan.fx_group[0].beam[0]
     >>> beam.area
-        [16172.0, 16172.0, 13398.0, 13398.0, 428.0, 428.0, 787.0, 787.0,
-        582.0, 582.0, 1728.0, 1728.0, 3479.0, 3479.0, 502.0, 502.0, 8587.0,
-        8587.0]
+        [16172.0, 16172.0, 13398.0, 13398.0, 428.0, 428.0, 787.0, 787.0, 582.0,
+        582.0, 1728.0, 1728.0, 3479.0, 3479.0, 502.0, 502.0, 8587.0, 8587.0]
     >>> beam.gantry_angle
         [200.0]
     >>> beam.meter_set
