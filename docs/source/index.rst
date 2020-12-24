@@ -14,6 +14,7 @@ Welcome to the documentation for DVHA MLC Analyzer!
    usage
    Module Reference <modules>
    authors
+   history
 
 Indices and tables
 ==================

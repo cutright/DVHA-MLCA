@@ -1,13 +1,13 @@
-mlc analyzer module
----------------------------------
+MLC Analyzer
+------------
 
 .. automodule:: mlca.mlc_analyzer
     :members:
     :undoc-members:
     :show-inheritance:
 
-utilities module
----------------------------------
+Utilities
+----------
 
 .. automodule:: mlca.utilities
     :members:

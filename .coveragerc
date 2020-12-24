@@ -9,6 +9,7 @@
 omit =
     setup.py
     mlca/_version.py
+    mlca/main.py
     tests/*
     docs/*
     venv/*
