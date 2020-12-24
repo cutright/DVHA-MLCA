@@ -1,0 +1,45 @@
+[
+  {
+    "Patient Name": "ANON11264",
+    "Patient MRN": "ANON11264",
+    "Study Instance UID": "2.16.840.1.114362.1.6.7.4.17517.7693757184.462857971.1073.8123",
+    "TPS": "ADAC Pinnacle3",
+    "Plan name": "ANON",
+    "# of Fx Group(s)": "3",
+    "Fx Group #": "1",
+    "Fractions": "26",
+    "Plan MUs": "776.1",
+    "Beam Count(s)": "9",
+    "Control Point(s)": "140",
+    "Complexity Score(s)":"1.274"
+  },
+  {
+    "Patient Name": "ANON11264",
+    "Patient MRN": "ANON11264",
+    "Study Instance UID": "2.16.840.1.114362.1.6.7.4.17517.7693757184.462857971.1073.8123",
+    "TPS": "ADAC Pinnacle3",
+    "Plan name": "ANON",
+    "# of Fx Group(s)": "3",
+    "Fx Group #": "2",
+    "Fractions": "10",
+    "Plan MUs": "659.2",
+    "Beam Count(s)": "9",
+    "Control Point(s)": "120",
+    "Complexity Score(s)": "1.290"
+  },
+  {
+    "Patient Name": "ANON11264",
+    "Patient MRN": "ANON11264",
+    "Study Instance UID": "2.16.840.1.114362.1.6.7.4.17517.7693757184.462857971.1073.8123",
+    "TPS": "ADAC Pinnacle3",
+    "Plan name": "ANON",
+    "# of Fx Group(s)": "3",
+    "Fx Group #": "3",
+    "Fractions": "13",
+    "Plan MUs": "512.3",
+    "Beam Count(s)": "8",
+    "Control Point(s)": "100",
+    "Complexity Score(s)": "1.127"
+  }
+]
+
