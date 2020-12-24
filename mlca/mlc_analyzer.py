@@ -479,7 +479,7 @@ class Beam:
         ]
 
         self.summary = {
-            "cp": range(1, len(self.control_point) + 1),
+            "cp": list(range(1, len(self.control_point) + 1)),
             "cum_mu_frac": [cp.cum_mu for cp in self.control_point],
             "cum_mu": self.cum_mu,
             "cp_mu": self.cp_mu,
