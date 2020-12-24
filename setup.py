@@ -20,6 +20,22 @@ with open('requirements.txt', 'r') as doc:
 with open('README.rst', 'r') as doc:
     long_description = doc.read()
 
+CLASSIFIERS = [
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Healthcare Industry",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Topic :: Scientific/Engineering :: Physics"]
+
 
 setup(
     name='dvha-mlca',
@@ -33,10 +49,10 @@ setup(
     url='https://github.com/cutright/DVHA-MLCA',
     download_url='https://github.com/cutright/DVHA-MLCA/archive/master.zip',
     license="MIT License",
-    keywords=['dvh', 'radiation therapy', 'research', 'dicom', 'dicom-rt', 'analytics'],
-    classifiers=[],
+    keywords=['radiation therapy', 'research', 'dicom', 'dicom-rt', 'analytics'],
+    classifiers=CLASSIFIERS,
     install_requires=requires,
     entry_points={'console_scripts': ['mlca = mlca.main:main']},
     long_description=long_description,
-    long_description_content_type="text/markdown"
+    long_description_content_type="text/x-rst"
 )
