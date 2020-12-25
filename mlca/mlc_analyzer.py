@@ -12,7 +12,7 @@ Hierarchy of classes: Plan -> FxGroup -> Beam -> ControlPoint
 #    available at https://github.com/cutright/DVHA-MLCA
 
 import pydicom
-from pydicom.dataset import Dataset, DataElement
+from pydicom.dataset import Dataset
 import numpy as np
 from shapely.geometry import Polygon
 from shapely import speedups
