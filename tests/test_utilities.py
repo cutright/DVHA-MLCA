@@ -13,6 +13,7 @@
 import unittest
 from os.path import join, basename
 from mlca import utilities
+from mlca.options import DEFAULT_OPTIONS
 from shapely.geometry import GeometryCollection, MultiPolygon, Polygon
 
 test_dir = "tests"
@@ -79,3 +80,31 @@ class TestUtilities(unittest.TestCase):
 
         path_lengths = utilities.get_xy_path_lengths(collection)
         self.assertEqual([6.0, 12.0], path_lengths)
+
+    def test_create_cmd_parser(self):
+        """Test create_cmd_parser"""
+        cmd_parser = utilities.create_cmd_parser()
+        kwargs = vars(cmd_parser.parse_args([]))
+        keys = sorted(list(kwargs))
+        exp = sorted(
+            [
+                "init_dir",
+                "output_file",
+                "complexity_weight_x",
+                "complexity_weight_y",
+                "max_field_size_x",
+                "max_field_size_y",
+                "print_version",
+                "verbose",
+            ]
+        )
+        self.assertEqual(keys, exp)
+        for key in ["complexity_weight_", "max_field_size_"]:
+            for dim in ["x", "y"]:
+                self.assertEqual(kwargs[key + dim], DEFAULT_OPTIONS[key + dim])
+
+    def test_get_default_output_filename(self):
+        """test get_default_output_filename"""
+        file_name = utilities.get_default_output_filename()
+        self.assertTrue(isinstance(file_name, str))
+        self.assertEqual(file_name.split('.')[-1], "csv")

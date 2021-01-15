@@ -1,6 +1,10 @@
 History
 =======
 
+v0.2.1 (TBD)
+------------
+ - Fixed issue preventing main run from command line
+
 v0.2 (2020.12.23)
 -----------------
  - Add verbose mode

@@ -2,14 +2,21 @@
 # -*- coding: utf-8 -*-
 
 # utilities.py
-# Copyright (c) 2016-2020 Dan Cutright
+"""
+Utilities for DVHA-MLCA
+"""
+# Copyright (c) 2016-2021 Dan Cutright
 # This file is part of DVH Analytics MLC Analyzer, released under a BSD license
 #    See the file LICENSE included with this distribution, also
 #    available at https://github.com/cutright/DVHA-MLCA
 
+import argparse
+from datetime import datetime
+from mlca._version import __version__
 import numpy as np
 import pydicom
 import os
+from mlca.options import DEFAULT_OPTIONS
 
 
 def get_xy_path_lengths(shapely_object):
@@ -165,3 +172,95 @@ def get_dicom_files(init_dir, modality=None, verbose=False):
     if verbose:
         print("DICOM-RT Plan search complete")
     return rt_plans
+
+
+def create_cmd_parser():
+    """Get an argument parser for mlca.main
+
+    Returns
+    -------
+    argparse.ArgumentParser
+        argument parser
+    """
+    cmd_parser = argparse.ArgumentParser(
+        description="Command line DVHA MLC Analyzer"
+    )
+    cmd_parser.add_argument(
+        "init_dir",
+        nargs="?",
+        help="Directory containing DICOM-RT Plan files",
+        default=None,
+    )
+    cmd_parser.add_argument(
+        "-of",
+        "--output-file",
+        dest="output_file",
+        help="Output will be saved as dvha_mlca_<version>_results_"
+        "<time-stamp>.csv by default.",
+        default=None,
+    )
+    cmd_parser.add_argument(
+        "-xw",
+        "--x-weight",
+        dest="complexity_weight_x",
+        help="Complexity coefficient for x-dimension: default = %0.1f"
+        % DEFAULT_OPTIONS["complexity_weight_x"],
+        default=DEFAULT_OPTIONS["complexity_weight_x"],
+    )
+    cmd_parser.add_argument(
+        "-yw",
+        "--y-weight",
+        dest="complexity_weight_y",
+        help="Complexity coefficient for y-dimension: default = %0.1f"
+        % DEFAULT_OPTIONS["complexity_weight_y"],
+        default=DEFAULT_OPTIONS["complexity_weight_y"],
+    )
+    cmd_parser.add_argument(
+        "-xs",
+        "--x-max-field-size",
+        dest="max_field_size_x",
+        help="Maximum field size in the x-dimension: default = %0.1f (mm)"
+        % DEFAULT_OPTIONS["max_field_size_x"],
+        default=DEFAULT_OPTIONS["max_field_size_x"],
+    )
+    cmd_parser.add_argument(
+        "-ys",
+        "--y-max-field-size",
+        dest="max_field_size_y",
+        help="Maximum field size in the y-dimension: default = %0.1f (mm)"
+        % DEFAULT_OPTIONS["max_field_size_y"],
+        default=DEFAULT_OPTIONS["max_field_size_y"],
+    )
+    cmd_parser.add_argument(
+        "-ver",
+        "--version",
+        dest="print_version",
+        help="Print the DVHA-MLCA version",
+        default=False,
+        action="store_true",
+    )
+    cmd_parser.add_argument(
+        "-v",
+        "--verbose",
+        dest="verbose",
+        help="Print final results and plan summaries as they are analyzed",
+        default=False,
+        action="store_true",
+    )
+
+    return cmd_parser
+
+
+def get_default_output_filename():
+    """Get the default output file name for mlca.main.process
+
+    Returns
+    -------
+    str
+        dvha_mlca_<version>_results_<timestamp>.csv
+    """
+    time_stamp = str(datetime.now()).replace(":", "-").replace(".", "-")
+    return "dvha_mlca_%s_results_%s.csv" % (
+        __version__,
+        time_stamp,
+    )
