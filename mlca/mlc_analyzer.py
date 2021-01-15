@@ -32,6 +32,7 @@ COLUMNS = [
     "Patient Name",
     "Patient MRN",
     "Study Instance UID",
+    "SOP Instance UID",
     "TPS",
     "Plan name",
     "# of Fx Group(s)",
@@ -84,27 +85,30 @@ class PlanSet:
     """
 
     def __init__(self, file_paths, verbose=False, **kwargs):
+        self.file_paths = file_paths
+        self.verbose = verbose
+        self.kwargs = kwargs
+        self.summary_table = [",".join(COLUMNS)]
 
-        self.plans = []
-        plan_count = len(file_paths)
-        for i, file_path in enumerate(file_paths):
-            if verbose:
-                print(
-                    "Analyzing (%s of %s): %s" % (i + 1, plan_count, file_path)
-                )
-            self.plans.append(Plan(file_path, **kwargs))
-            if verbose:
-                print(self.plans[-1], "\n")
+        try:
+            self.__run()
+        except KeyboardInterrupt:
+            print("Plan analyzer halted!")
 
-    @property
-    def summary_table(self):
-        """Get a summary """
-        summary_table = [",".join(COLUMNS)]
-        for plan in self.plans:
-            for fx_grp_row in plan.summary:
-                row = [fx_grp_row[key] for key in COLUMNS]
-                summary_table.append(",".join(row))
-        return summary_table
+    def __run(self):
+        plan_count = len(self.file_paths)
+        for i, file_path in enumerate(self.file_paths):
+            print("Analyzing (%s of %s): %s" % (i + 1, plan_count, file_path))
+            try:
+                plan = Plan(file_path, **self.kwargs)
+                for fx_grp_row in plan.summary:
+                    row = [fx_grp_row[key] for key in COLUMNS]
+                    self.summary_table.append(",".join(row))
+
+                if self.verbose:
+                    print(plan, "\n")
+            except Exception as e:
+                print("Analysis failed\n%s\n" % e)
 
     @property
     def csv(self):
@@ -149,6 +153,7 @@ class Plan:
                 "Patient Name": self.patient_name,
                 "Patient MRN": self.patient_id,
                 "Study Instance UID": self.study_instance_uid,
+                "SOP Instance UID": self.sop_instance_uid,
                 "TPS": self.tps,
                 "Plan name": self.plan_name,
                 "# of Fx Group(s)": str(len(self.fx_group)),
@@ -169,6 +174,7 @@ class Plan:
             "Patient Name:        %s" % self.patient_name,
             "Patient MRN:         %s" % self.patient_id,
             "Study Instance UID:  %s" % self.study_instance_uid,
+            "SOP Instance UID:    %s" % self.sop_instance_uid,
             "TPS:                 %s" % self.tps,
             "Plan name:           %s" % self.plan_name,
             "# of Fx Group(s):    %s" % len(self.fx_group),
@@ -209,6 +215,7 @@ class Plan:
             "patient_name",
             "patient_id",
             "study_instance_uid",
+            "sop_instance_uid",
             "tps",
         ]
         if not all([getattr(self, a) == getattr(other, a) for a in attr]):
@@ -228,7 +235,7 @@ class Plan:
         str
             RTPlanLabel (300A,0002)
         """
-        return str(self.rt_plan.RTPlanLabel)
+        return str(getattr(self.rt_plan, "RTPlanLabel", ""))
 
     @property
     def patient_name(self):
@@ -239,7 +246,7 @@ class Plan:
         str
             PatientName (0010,0010)
         """
-        return str(self.rt_plan.PatientName)
+        return str(getattr(self.rt_plan, "PatientName", ""))
 
     @property
     def patient_id(self):
@@ -250,7 +257,7 @@ class Plan:
         str
             PatientID (0010,0020)
         """
-        return str(self.rt_plan.PatientID)
+        return str(getattr(self.rt_plan, "PatientID", ""))
 
     @property
     def study_instance_uid(self):
@@ -261,7 +268,18 @@ class Plan:
         str
             StudyInstanceUID (0020,000D)
         """
-        return str(self.rt_plan.StudyInstanceUID)
+        return str(getattr(self.rt_plan, "StudyInstanceUID", ""))
+
+    @property
+    def sop_instance_uid(self):
+        """Get the patient study instance UID
+
+        Returns
+        -------
+        str
+            SOPInstanceUID (0008,0018)
+        """
+        return str(getattr(self.rt_plan, "SOPInstanceUID", ""))
 
     @property
     def tps(self):
@@ -273,8 +291,8 @@ class Plan:
             Manufacturer (0008,0070) and ManufacturerModelName (0008,1090)
         """
         return "%s %s" % (
-            self.rt_plan.Manufacturer,
-            self.rt_plan.ManufacturerModelName,
+            getattr(self.rt_plan, "Manufacturer", ""),
+            getattr(self.rt_plan, "ManufacturerModelName", ""),
         )
 
     @property

@@ -107,4 +107,4 @@ class TestUtilities(unittest.TestCase):
         """test get_default_output_filename"""
         file_name = utilities.get_default_output_filename()
         self.assertTrue(isinstance(file_name, str))
-        self.assertEqual(file_name.split('.')[-1], "csv")
+        self.assertEqual(file_name.split(".")[-1], "csv")

@@ -162,6 +162,12 @@ class TestUtilities(unittest.TestCase):
 
         # test plan equality comparison
         self.assertTrue(plan == plan)
+        self.assertTrue(str(plan) == plan.__repr__())
+
+        ds2 = pydicom.read_file(example_file_path)
+        ds2.StudyInstanceUID = "test"
+        plan_2 = mlc_analyzer.Plan(ds2)
+        self.assertFalse(plan == plan_2)
 
         plan_2 = mlc_analyzer.Plan(self.plan_ds)
         plan_2.fx_group[0] = plan_2.fx_group[1]

@@ -1,9 +1,12 @@
 History
 =======
 
-v0.2.1 (TBD)
-------------
+v0.2.1 (2020.01.15)
+-------------------
  - Fixed issue preventing main run from command line
+ - Support for large scale analysis, don't store full pydicom datasets
+ - Added SOPInstanceUID to summary
+ - Keyboard Interrupt (CTRL+C) during analysis (after file collection) will write the partial results
 
 v0.2 (2020.12.23)
 -----------------

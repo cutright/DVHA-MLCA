@@ -40,7 +40,7 @@ def process(init_dir=None, output_file=None, print_version=False, **kwargs):
     if init_dir is not None:
 
         kwargs["file_paths"] = get_dicom_files(
-            init_dir, modality="RTPLAN", verbose=kwargs["verbose"]
+            init_dir, modality="RTPLAN", verbose=True
         )
         plan_analyzer = PlanSet(**kwargs)
 
@@ -49,6 +49,9 @@ def process(init_dir=None, output_file=None, print_version=False, **kwargs):
 
         if not output_file:
             output_file = get_default_output_filename()
+
+        print("Printing summary to: %s" % output_file)
+
         with open(output_file, "w") as doc:
             doc.write(plan_analyzer.csv)
 

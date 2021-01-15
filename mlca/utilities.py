@@ -166,7 +166,7 @@ def get_dicom_files(init_dir, modality=None, verbose=False):
 
     """
     if verbose:
-        print("Finding DICOM-RT Plans in %s..." % init_dir)
+        print("Finding DICOM-RT Plans in %s ..." % init_dir)
     file_paths = get_file_paths(init_dir)
     rt_plans = [f for f in file_paths if is_file_dicom(f, modality, verbose)]
     if verbose:
