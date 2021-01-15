@@ -5,8 +5,8 @@
 """
 A setuptools setup file for DVH Analytics MLC Analyzer
 """
-# Copyright (c) 2016-2020 Dan Cutright
-# This file is part of DVH Analytics MLC Analyzer, released under a BSD license.
+# Copyright (c) 2016-2021 Dan Cutright
+# This file is part of DVH Analytics MLC Analyzer, released under a BSD license
 #    See the file LICENSE included with this distribution, also
 #    available at https://github.com/cutright/DVHA-MLCA
 
