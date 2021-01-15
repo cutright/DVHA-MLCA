@@ -175,6 +175,13 @@ def get_dicom_files(init_dir, modality=None, verbose=False):
 
 
 def create_cmd_parser():
+    """Get an argument parser for mlca.main
+
+    Returns
+    -------
+    argparse.ArgumentParser
+        argument parser
+    """
     cmd_parser = argparse.ArgumentParser(
         description="Command line DVHA MLC Analyzer"
     )
@@ -245,6 +252,13 @@ def create_cmd_parser():
 
 
 def get_default_output_filename():
+    """Get the default output file name for mlca.main.process
+
+    Returns
+    -------
+    str
+        dvha_mlca_<version>_results_<timestamp>.csv
+    """
     time_stamp = str(datetime.now()).replace(":", "-").replace(".", "-")
     return "dvha_mlca_%s_results_%s.csv" % (
         __version__,
