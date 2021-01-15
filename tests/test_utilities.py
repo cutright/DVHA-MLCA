@@ -84,7 +84,7 @@ class TestUtilities(unittest.TestCase):
     def test_create_cmd_parser(self):
         """Test create_cmd_parser"""
         cmd_parser = utilities.create_cmd_parser()
-        kwargs = vars(cmd_parser.parse_args())
+        kwargs = vars(cmd_parser.parse_args([]))
         keys = sorted(list(kwargs))
         exp = sorted(
             [
