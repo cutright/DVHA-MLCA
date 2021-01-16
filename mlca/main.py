@@ -13,6 +13,7 @@ Collect DICOM-RT Plan Files, save summary to .csv
 from mlca.mlc_analyzer import PlanSet
 from mlca._version import __version__
 from mlca.utilities import (
+    get_file_paths,
     get_dicom_files,
     create_cmd_parser,
     get_default_output_filename,
@@ -54,24 +55,27 @@ def process(
             processes = int(float(processes))
         except Exception:
             processes = 1
-        print("Directory: %s" % init_dir)
-        print("Searching for DICOM-RT Plan files ...")
-        file_paths = get_dicom_files(
-            init_dir,
+
+        print("Directory: %s\n"
+              "Begin file tree scan ..." % init_dir)
+        file_paths = get_file_paths(init_dir)
+        print("File tree scan complete\n"
+              "Searching for DICOM-RT Plan files ...")
+        dicom_plan_files = get_dicom_files(
+            file_paths,
             modality="RTPLAN",
             verbose=verbose,
-            verbose_walk=True,
             processes=processes,
         )
-        print("%s DICOM-RT Plan file(s) found" % len(file_paths))
+        print("%s DICOM-RT Plan file(s) found" % len(dicom_plan_files))
 
         if not output_file:
             output_file = get_default_output_filename()
 
         kwargs["verbose"] = verbose
         kwargs["processes"] = processes
-        print("Analyzing %s file(s) ..." % len(file_paths))
-        plan_analyzer = PlanSet(file_paths, **kwargs)
+        print("Analyzing %s file(s) ..." % len(dicom_plan_files))
+        plan_analyzer = PlanSet(dicom_plan_files, **kwargs)
         print("Analysis Complete")
 
         if kwargs["verbose"]:

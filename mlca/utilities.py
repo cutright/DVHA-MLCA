@@ -153,19 +153,17 @@ def is_file_dicom(file_path, modality=None, verbose=False):
     return False
 
 
-def get_dicom_files(init_dir, modality=None, verbose=False, verbose_walk=None, processes=1):
-    """Find all DICOM-RT Plan files in a directory and sub-directories
+def get_dicom_files(file_paths, modality=None, verbose=False, processes=1):
+    """Find all DICOM-RT Plan files in a list of file paths
 
     Parameters
     ----------
-    init_dir : str
-        Top-level directory to search for DICOM-RT Plan files
+    file_paths : list
+        A list of file paths
     modality : str, optional
         Specify Modality (0008,0060)
     verbose : bool, optional
         Print results to terminal
-    verbose_walk : bool, optional
-        Print start and stop of os.walk. Leave as None to use ``verbose`` value
     processes : int
         Number of processes for multiprocessing.
 
@@ -175,12 +173,6 @@ def get_dicom_files(init_dir, modality=None, verbose=False, verbose_walk=None, p
         Absolute file paths to DICOM-RT Plans
 
     """
-    verbose_walk = verbose if verbose_walk is None else verbose_walk
-    if verbose_walk:
-        print("Begin file tree scan ...")
-    file_paths = get_file_paths(init_dir)
-    if verbose_walk:
-        print("File tree scan complete.")
 
     if processes == 1:
         return [f for f in file_paths if is_file_dicom(f, modality, verbose)]
