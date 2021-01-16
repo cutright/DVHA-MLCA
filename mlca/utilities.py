@@ -20,6 +20,7 @@ from os.path import join
 from mlca.options import DEFAULT_OPTIONS
 from multiprocessing import Pool
 from tqdm import tqdm
+import warnings
 
 
 def get_xy_path_lengths(shapely_object):
@@ -133,7 +134,9 @@ def is_file_dicom(file_path, modality=None, verbose=False):
     """
     kwargs = {"stop_before_pixels": True, "force": True}
     try:
-        ds = pydicom.read_file(file_path, **kwargs)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            ds = pydicom.read_file(file_path, **kwargs)
         # Assuming SOPClassUID is a required tag
         if modality is None and "SOPClassUID" in ds:
             if verbose:
@@ -150,7 +153,7 @@ def is_file_dicom(file_path, modality=None, verbose=False):
     return False
 
 
-def get_dicom_files(init_dir, modality=None, verbose=False, processes=1):
+def get_dicom_files(init_dir, modality=None, verbose=False, verbose_walk=None, processes=1):
     """Find all DICOM-RT Plan files in a directory and sub-directories
 
     Parameters
@@ -161,8 +164,10 @@ def get_dicom_files(init_dir, modality=None, verbose=False, processes=1):
         Specify Modality (0008,0060)
     verbose : bool, optional
         Print results to terminal
+    verbose_walk : bool, optional
+        Print start and stop of os.walk. Leave as None to use ``verbose`` value
     processes : int
-        Number of processes for multiprocessing
+        Number of processes for multiprocessing.
 
     Returns
     -------
@@ -170,8 +175,13 @@ def get_dicom_files(init_dir, modality=None, verbose=False, processes=1):
         Absolute file paths to DICOM-RT Plans
 
     """
-
+    verbose_walk = verbose if verbose_walk is None else verbose_walk
+    if verbose_walk:
+        print("Begin file tree scan ...")
     file_paths = get_file_paths(init_dir)
+    if verbose_walk:
+        print("File tree scan complete.")
+
     if processes == 1:
         return [f for f in file_paths if is_file_dicom(f, modality, verbose)]
 

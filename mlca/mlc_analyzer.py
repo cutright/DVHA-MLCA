@@ -27,6 +27,7 @@ from mlca.options import (
     CONTROL_POINT_POS_TOLERANCE,
     DEFAULT_OPTIONS,
 )
+import warnings
 
 
 COLUMNS = [
@@ -139,7 +140,9 @@ class PlanSet:
         """
         data = []
         try:
-            plan = Plan(file_path, **self.kwargs)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                plan = Plan(file_path, **self.kwargs)
             for fx_grp_row in plan.summary:
                 row = [fx_grp_row[key] for key in COLUMNS]
                 data.append(",".join(row))
@@ -811,16 +814,18 @@ class Beam:
             self.options["complexity_weight_x"],
             self.options["complexity_weight_y"],
         )
-        return (
-            np.divide(
-                np.multiply(
-                    np.add(c1 * self.perimeter_x, c2 * self.perimeter_y),
-                    self.cp_mu,
-                ),
-                self.area,
+        if self.meter_set and self.meter_set > 0:
+            return (
+                np.divide(
+                    np.multiply(
+                        np.add(c1 * self.perimeter_x, c2 * self.perimeter_y),
+                        self.cp_mu,
+                    ),
+                    self.area,
+                )
+                / self.meter_set
             )
-            / self.meter_set
-        )
+        return 0
 
 
 class ControlPoint:

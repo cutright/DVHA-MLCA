@@ -60,6 +60,7 @@ def process(
             init_dir,
             modality="RTPLAN",
             verbose=verbose,
+            verbose_walk=True,
             processes=processes,
         )
         print("%s DICOM-RT Plan file(s) found" % len(file_paths))
