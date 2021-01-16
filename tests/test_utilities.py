@@ -97,7 +97,7 @@ class TestUtilities(unittest.TestCase):
                 "max_field_size_y",
                 "print_version",
                 "verbose",
-                "processes"
+                "processes",
             ]
         )
         self.assertEqual(keys, exp)

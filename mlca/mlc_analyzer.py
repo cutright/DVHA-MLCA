@@ -104,8 +104,9 @@ class PlanSet:
             except KeyboardInterrupt:
                 print("Plan analyzer halted!")
         else:
-            data = run_multiprocessing(self._worker, self.file_paths,
-                                       self.processes)
+            data = run_multiprocessing(
+                self._worker, self.file_paths, self.processes
+            )
             for row in data:
                 self.summary_table.extend(row)
 

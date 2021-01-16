@@ -80,6 +80,19 @@ Command line usage
                             processes
 
 
+For example:
+
+.. code-block:: console
+
+    $ mlca "C:\PatientDicom" -n 8
+    Directory: C:\PatientDicom
+    Begin file tree scan ...
+    File tree scan complete
+    Searching for DICOM-RT Plan files ...
+         100%|██████████████████████████████| 9087/9087 [00:59<00:00, 153.52it/s]
+    1650 DICOM-RT Plan file(s) found
+    Analyzing 1650 file(s) ...
+          10%|███                           | 169/1650 [02:02<13:35,  1.82it/s]
 
 
 Dependencies

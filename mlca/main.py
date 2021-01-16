@@ -56,11 +56,11 @@ def process(
         except Exception:
             processes = 1
 
-        print("Directory: %s\n"
-              "Begin file tree scan ..." % init_dir)
+        print("Directory: %s\n" "Begin file tree scan ..." % init_dir)
         file_paths = get_file_paths(init_dir)
-        print("File tree scan complete\n"
-              "Searching for DICOM-RT Plan files ...")
+        print(
+            "File tree scan complete\n" "Searching for DICOM-RT Plan files ..."
+        )
         dicom_plan_files = get_dicom_files(
             file_paths,
             modality="RTPLAN",
