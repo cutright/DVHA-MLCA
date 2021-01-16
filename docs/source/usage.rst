@@ -2,34 +2,6 @@
 Usage
 =====
 
-Command Line
-------------
-
-
-.. code-block:: console
-
-    $ mlca "C:\PatientDicom"
-
-
-To enable multi-threading, indicate the max number of parallel threads allowed
-with the ``--processes`` flag (or ``-n`` for short). The example below allows
-up to 8 parallel processes. This applies to checking for DICOM modality and
-beam analysis.
-
-.. code-block:: console
-
-    $ mlca "C:\PatientDicom" -n 8
-    Directory: C:\PatientDicom
-    Begin file tree scan ...
-    File tree scan complete
-    Searching for DICOM-RT Plan files ...
-         100%|██████████████████████████████| 9087/9087 [00:59<00:00, 153.52it/s]
-    1650 DICOM-RT Plan file(s) found
-    Analyzing 1650 file(s) ...
-          10%|███                           | 169/1650 [02:02<13:35,  1.82it/s]
-
-
-
 Plan Summary
 ------------
 A simple example is below. Check out the module references for details about
