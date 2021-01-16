@@ -101,6 +101,7 @@ Dependencies
 * `Pydicom <https://github.com/darcymason/pydicom>`__
 * `NumPy <http://numpy.org>`__
 * `Shapely <https://github.com/Toblerity/Shapely>`__
+* `tqdm <https://github.com/tqdm/tqdm>`__
 
 Support
 -------
