@@ -19,6 +19,7 @@ from shapely import speedups
 from mlca.utilities import (
     flatten_list_of_lists as flatten,
     get_xy_path_lengths,
+    run_multiprocessing,
 )
 from mlca.options import (
     BEAM_MU_TOLERANCE,
@@ -26,6 +27,7 @@ from mlca.options import (
     CONTROL_POINT_POS_TOLERANCE,
     DEFAULT_OPTIONS,
 )
+import warnings
 
 
 COLUMNS = [
@@ -81,21 +83,34 @@ class PlanSet:
     ----------
     file_paths : list
         A list of file paths to DICOM-RT Plan files
+    verbose : bool, optional
+        Set to true to print detailed information (ignored if
+        multiprocessing enabled)
+    processes : int
+        Number of parallel processes allowed
 
     """
 
-    def __init__(self, file_paths, verbose=False, **kwargs):
+    def __init__(self, file_paths, verbose=False, processes=1, **kwargs):
         self.file_paths = file_paths
         self.verbose = verbose
+        self.processes = processes
         self.kwargs = kwargs
         self.summary_table = [",".join(COLUMNS)]
 
-        try:
-            self.__run()
-        except KeyboardInterrupt:
-            print("Plan analyzer halted!")
+        if processes == 1:
+            try:
+                self._run()
+            except KeyboardInterrupt:
+                print("Plan analyzer halted!")
+        else:
+            data = run_multiprocessing(self._worker, self.file_paths,
+                                       self.processes)
+            for row in data:
+                self.summary_table.extend(row)
 
-    def __run(self):
+    def _run(self):
+        """Process files, accumulate data in self.summary_table"""
         plan_count = len(self.file_paths)
         for i, file_path in enumerate(self.file_paths):
             print("Analyzing (%s of %s): %s" % (i + 1, plan_count, file_path))
@@ -109,6 +124,31 @@ class PlanSet:
                     print(plan, "\n")
             except Exception as e:
                 print("Analysis failed\n%s\n" % e)
+
+    def _worker(self, file_path):
+        """Multiprocessing worker
+
+        Parameters
+        ----------
+        file_path : str
+            file path of a DICOM-RT Plan file
+
+        Returns
+        -------
+        list
+            Results from Plan.summary prepped for CSV output
+        """
+        data = []
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                plan = Plan(file_path, **self.kwargs)
+            for fx_grp_row in plan.summary:
+                row = [fx_grp_row[key] for key in COLUMNS]
+                data.append(",".join(row))
+        except Exception:
+            pass
+        return data
 
     @property
     def csv(self):
@@ -774,16 +814,18 @@ class Beam:
             self.options["complexity_weight_x"],
             self.options["complexity_weight_y"],
         )
-        return (
-            np.divide(
-                np.multiply(
-                    np.add(c1 * self.perimeter_x, c2 * self.perimeter_y),
-                    self.cp_mu,
-                ),
-                self.area,
+        if self.meter_set and self.meter_set > 0:
+            return (
+                np.divide(
+                    np.multiply(
+                        np.add(c1 * self.perimeter_x, c2 * self.perimeter_y),
+                        self.cp_mu,
+                    ),
+                    self.area,
+                )
+                / self.meter_set
             )
-            / self.meter_set
-        )
+        return 0
 
 
 class ControlPoint:

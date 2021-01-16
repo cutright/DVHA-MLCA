@@ -59,13 +59,14 @@ class TestUtilities(unittest.TestCase):
 
     def test_get_dicom_files(self):
         """Test get_dicom_rt_plan_files"""
-        files = utilities.get_dicom_files(test_dir, verbose=True)
-        self.assertTrue(len(files) == 1)
-        self.assertEqual(basename(self.data_path), basename(files[0]))
+        files = utilities.get_file_paths(test_dir)
+        dcm_files = utilities.get_dicom_files(files, verbose=True)
+        self.assertTrue(len(dcm_files) == 1)
+        self.assertEqual(basename(self.data_path), basename(dcm_files[0]))
 
-        files = utilities.get_dicom_files(test_dir, "RTPLAN", True)
-        self.assertTrue(len(files) == 1)
-        self.assertEqual(basename(self.data_path), basename(files[0]))
+        dcm_files = utilities.get_dicom_files(files, "RTPLAN", True)
+        self.assertTrue(len(dcm_files) == 1)
+        self.assertEqual(basename(self.data_path), basename(dcm_files[0]))
 
     def test_get_xy_path_lengths(self):
         """Test get_xy_path_lengths"""
@@ -96,6 +97,7 @@ class TestUtilities(unittest.TestCase):
                 "max_field_size_y",
                 "print_version",
                 "verbose",
+                "processes"
             ]
         )
         self.assertEqual(keys, exp)

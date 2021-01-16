@@ -180,7 +180,20 @@ class TestUtilities(unittest.TestCase):
 
     def test_plan_set(self):
         """Test PlanSet"""
-        files = utilities.get_dicom_files(test_dir)
-        plan_set = mlc_analyzer.PlanSet(files, verbose=True)
+        files = utilities.get_file_paths(test_dir)
+        dcm_files = utilities.get_dicom_files(files, verbose=True)
+        plan_set = mlc_analyzer.PlanSet(dcm_files, verbose=True)
+        summary = plan_set.csv.split("\n")
+        self.assertTrue(len(summary) == 4)
+
+        # Test _worker
+        data = plan_set._worker(dcm_files[0])
+        self.assertTrue(len(data) == 3)
+
+    def test_plan_set_multiprocessing(self):
+        """Test PlanSet with multiprocessing"""
+        files = utilities.get_file_paths(test_dir)
+        dcm_files = utilities.get_dicom_files(files, processes=2)
+        plan_set = mlc_analyzer.PlanSet(dcm_files, verbose=True, processes=2)
         summary = plan_set.csv.split("\n")
         self.assertTrue(len(summary) == 4)

@@ -1,6 +1,10 @@
 History
 =======
 
+v0.2.2 (TBD)
+------------
+ - Multiprocessing support
+
 v0.2.1 (2020.01.15)
 -------------------
  - Fixed issue preventing main run from command line
