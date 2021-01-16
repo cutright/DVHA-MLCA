@@ -15,8 +15,11 @@ from datetime import datetime
 from mlca._version import __version__
 import numpy as np
 import pydicom
-import os
+from os import walk
+from os.path import join
 from mlca.options import DEFAULT_OPTIONS
+from multiprocessing import Pool
+from tqdm import tqdm
 
 
 def get_xy_path_lengths(shapely_object):
@@ -103,9 +106,9 @@ def get_file_paths(init_dir):
     """
     file_paths = []
     # iterate through files and all sub-directories
-    for dirName, subdirList, fileList in os.walk(init_dir):
+    for dirName, subdirList, fileList in walk(init_dir):
         for file_name in fileList:
-            file_paths.append(os.path.join(dirName, file_name))
+            file_paths.append(join(dirName, file_name))
     return file_paths
 
 
@@ -147,7 +150,7 @@ def is_file_dicom(file_path, modality=None, verbose=False):
     return False
 
 
-def get_dicom_files(init_dir, modality=None, verbose=False):
+def get_dicom_files(init_dir, modality=None, verbose=False, processes=1):
     """Find all DICOM-RT Plan files in a directory and sub-directories
 
     Parameters
@@ -158,6 +161,8 @@ def get_dicom_files(init_dir, modality=None, verbose=False):
         Specify Modality (0008,0060)
     verbose : bool, optional
         Print results to terminal
+    processes : int
+        Number of processes for multiprocessing
 
     Returns
     -------
@@ -165,13 +170,50 @@ def get_dicom_files(init_dir, modality=None, verbose=False):
         Absolute file paths to DICOM-RT Plans
 
     """
-    if verbose:
-        print("Finding DICOM-RT Plans in %s ..." % init_dir)
+
     file_paths = get_file_paths(init_dir)
-    rt_plans = [f for f in file_paths if is_file_dicom(f, modality, verbose)]
-    if verbose:
-        print("DICOM-RT Plan search complete")
-    return rt_plans
+    if processes == 1:
+        return [f for f in file_paths if is_file_dicom(f, modality, verbose)]
+
+    queue = [(f, modality, verbose) for f in file_paths]
+    ans = run_multiprocessing(_get_dicom_files_worker, queue, processes)
+    return [f for f in ans if f is not None]
+
+
+def _get_dicom_files_worker(args):
+    """Worker for get_dicom_files"""
+    return args[0] if is_file_dicom(*args) else None
+
+
+def run_multiprocessing(worker, queue, processes):
+    """Parallel processing
+
+    Parameters
+    ----------
+    worker : callable
+        single parameter function to be called on each item in queue
+    queue : iterable
+        A list of arguments for worker
+    processes : int
+        Number of processes for multiprocessing.Pool
+
+    Returns
+    -------
+    list
+        List of returns from worker
+
+    """
+    progress_kwargs = {
+        "total": len(queue),
+        "bar_format": "{desc:<5.5}{percentage:3.0f}%|{bar:30}{r_bar}",
+    }
+    data = []
+    with Pool(processes=processes) as pool:
+        with tqdm(**progress_kwargs) as pbar:
+            for item in pool.imap_unordered(worker, queue):
+                data.append(item)
+                pbar.update()
+    return data
 
 
 def create_cmd_parser():
@@ -247,6 +289,13 @@ def create_cmd_parser():
         default=False,
         action="store_true",
     )
+    cmd_parser.add_argument(
+        "-n",
+        "--processes",
+        dest="processes",
+        help="Enable multiprocessing, set number of parallel processes",
+        default=1,
+    )
 
     return cmd_parser
 
@@ -259,7 +308,7 @@ def get_default_output_filename():
     str
         dvha_mlca_<version>_results_<timestamp>.csv
     """
-    time_stamp = str(datetime.now()).replace(":", "-").replace(".", "-")
+    time_stamp = str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
     return "dvha_mlca_%s_results_%s.csv" % (
         __version__,
         time_stamp,

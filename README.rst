@@ -48,7 +48,7 @@ Command line usage
 
     usage: mlca [-h] [-of OUTPUT_FILE] [-xw COMPLEXITY_WEIGHT_X]
                 [-yw COMPLEXITY_WEIGHT_Y] [-xs MAX_FIELD_SIZE_X]
-                [-ys MAX_FIELD_SIZE_Y] [-ver]
+                [-ys MAX_FIELD_SIZE_Y] [-ver] [-v] [-n PROCESSES]
                 [init_dir]
 
     Command line DVHA MLC Analyzer
@@ -73,6 +73,12 @@ Command line usage
                             Maximum field size in the y-dimension: default = 400.0
                             (mm)
       -ver, --version       Print the DVHA-MLCA version
+      -v, --verbose         Print final results and plan summaries as they are
+                            analyzed
+      -n PROCESSES, --processes PROCESSES
+                            Enable multiprocessing, set number of parallel
+                            processes
+
 
 
 
@@ -120,7 +126,7 @@ researchers." Journal of Applied Clinical Medical Physics 19.5 (2018): 413-427.
    :alt: Codecov
 
 .. |Docs| image:: https://readthedocs.org/projects/dvha-mlca/badge/?version=latest
-   :target: https://dvha-mlca.readthedocs.io/en/latest/?badge=latest
+   :target: https://dvha-mlca.readthedocs.io/
    :alt: Documentation Status
 
 .. |code-style| image:: https://img.shields.io/badge/code%20style-black-000000.svg

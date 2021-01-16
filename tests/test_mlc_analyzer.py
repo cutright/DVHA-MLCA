@@ -184,3 +184,10 @@ class TestUtilities(unittest.TestCase):
         plan_set = mlc_analyzer.PlanSet(files, verbose=True)
         summary = plan_set.csv.split("\n")
         self.assertTrue(len(summary) == 4)
+
+    def test_plan_set_multiprocessing(self):
+        """Test PlanSet with multiprocessing"""
+        files = utilities.get_dicom_files(test_dir, processes=2)
+        plan_set = mlc_analyzer.PlanSet(files, verbose=True, processes=2)
+        summary = plan_set.csv.split("\n")
+        self.assertTrue(len(summary) == 4)
