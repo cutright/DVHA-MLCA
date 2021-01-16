@@ -1,11 +1,11 @@
 History
 =======
 
-v0.2.2 (TBD)
+v0.2.2 (2021.01.16)
 ------------
  - Multiprocessing support
 
-v0.2.1 (2020.01.15)
+v0.2.1 (2021.01.15)
 -------------------
  - Fixed issue preventing main run from command line
  - Support for large scale analysis, don't store full pydicom datasets
