@@ -17,6 +17,7 @@ from mlca.utilities import (
     get_dicom_files,
     create_cmd_parser,
     get_default_output_filename,
+    write_csv,
 )
 
 
@@ -79,11 +80,13 @@ def process(
         print("Analysis Complete")
 
         if kwargs["verbose"]:
-            print(plan_analyzer.csv.replace(",", "\t"))
+            to_print = "\n".join(
+                str(row) for row in plan_analyzer.summary_table
+            )
+            print(to_print.replace(",", "\t"))
 
         print("Printing summary to: %s" % output_file)
-        with open(output_file, "w") as doc:
-            doc.write(plan_analyzer.csv)
+        write_csv(output_file, plan_analyzer.summary_table)
 
     elif not print_version:
         print("mlca: error: the following arguments are required: init_dir")

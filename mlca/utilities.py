@@ -21,6 +21,7 @@ from mlca.options import DEFAULT_OPTIONS
 from multiprocessing import Pool
 from tqdm import tqdm
 import warnings
+import csv
 
 
 def get_xy_path_lengths(shapely_object):
@@ -315,3 +316,25 @@ def get_default_output_filename():
         __version__,
         time_stamp,
     )
+
+
+def write_csv(file_path, rows, mode="w", newline=""):
+    """Create csv.writer, call writerows(rows)
+
+    Parameters
+    ----------
+    file_path : str
+        path to file
+    rows : list, iterable
+        Items to be written to file_pointer (input for csv.writer.writerows)
+    mode : str
+        optional string that specifies the mode in which the file is opened
+    newline : str
+        controls how universal newlines mode works.
+        It can be None, '', '\n', '\r', and '\r\n'
+    """
+    with open(file_path, mode, encoding="utf-8", newline=newline) as f:
+        writer = csv.writer(
+            f, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
+        )
+        writer.writerows(rows)

@@ -26,7 +26,7 @@ beam_summary_file = join(basedata_dir, "beam_summary.json")
 plan_summary_file = join(basedata_dir, "plan_summary.json")
 
 
-class TestUtilities(unittest.TestCase):
+class TestMLCAnalzyer(unittest.TestCase):
     """Unit tests for Utilities."""
 
     def setUp(self):
@@ -183,8 +183,7 @@ class TestUtilities(unittest.TestCase):
         files = utilities.get_file_paths(test_dir)
         dcm_files = utilities.get_dicom_files(files, verbose=True)
         plan_set = mlc_analyzer.PlanSet(dcm_files, verbose=True)
-        summary = plan_set.csv.split("\n")
-        self.assertTrue(len(summary) == 4)
+        self.assertTrue(len(plan_set.summary_table) == 4)
 
         # Test _worker
         data = plan_set._worker(dcm_files[0])
@@ -195,5 +194,4 @@ class TestUtilities(unittest.TestCase):
         files = utilities.get_file_paths(test_dir)
         dcm_files = utilities.get_dicom_files(files, processes=2)
         plan_set = mlc_analyzer.PlanSet(dcm_files, verbose=True, processes=2)
-        summary = plan_set.csv.split("\n")
-        self.assertTrue(len(summary) == 4)
+        self.assertTrue(len(plan_set.summary_table) == 4)

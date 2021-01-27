@@ -12,6 +12,7 @@
 
 import unittest
 from os.path import join, basename
+from os import unlink
 from mlca import utilities
 from mlca.options import DEFAULT_OPTIONS
 from shapely.geometry import GeometryCollection, MultiPolygon, Polygon
@@ -68,6 +69,13 @@ class TestUtilities(unittest.TestCase):
         self.assertTrue(len(dcm_files) == 1)
         self.assertEqual(basename(self.data_path), basename(dcm_files[0]))
 
+    def test_get_dicom_files_worker(self):
+        """Test get_dicom_rt_plan_files"""
+        files = utilities.get_file_paths(test_dir)
+        args = (files[0], "TEST", False)
+        ans = utilities._get_dicom_files_worker(args)
+        self.assertIsNone(ans)
+
     def test_get_xy_path_lengths(self):
         """Test get_xy_path_lengths"""
         # paths lengths -> x = 2, y = 4
@@ -110,3 +118,18 @@ class TestUtilities(unittest.TestCase):
         file_name = utilities.get_default_output_filename()
         self.assertTrue(isinstance(file_name, str))
         self.assertEqual(file_name.split(".")[-1], "csv")
+
+    def test_write_csv(self):
+        """test write_csv"""
+        file_path = "test_write_csv"
+        utilities.write_csv("test_write_csv", [["one", "two"], [1, 2]])
+        with open(file_path, "r") as f:
+            data = f.readlines()
+
+        self.assertEqual(data[0].strip(), "one,two")
+        self.assertEqual(data[1].strip(), "1,2")
+
+        try:
+            unlink(file_path)
+        except Exception:
+            pass
