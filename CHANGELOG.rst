@@ -1,8 +1,8 @@
 History
 =======
 
-v0.2.3 (TBD)
-------------
+v0.2.3 (2021.01.27)
+-------------------
  - Use csv standard library for CSV writing
 
 v0.2.2 (2021.01.16)
