@@ -96,7 +96,7 @@ class PlanSet:
         self.verbose = verbose
         self.processes = processes
         self.kwargs = kwargs
-        self.summary_table = [",".join(COLUMNS)]
+        self.summary_table = [COLUMNS]
 
         if processes == 1:
             try:
@@ -119,7 +119,7 @@ class PlanSet:
                 plan = Plan(file_path, **self.kwargs)
                 for fx_grp_row in plan.summary:
                     row = [fx_grp_row[key] for key in COLUMNS]
-                    self.summary_table.append(",".join(row))
+                    self.summary_table.append(row)
 
                 if self.verbose:
                     print(plan, "\n")
@@ -145,22 +145,10 @@ class PlanSet:
                 warnings.simplefilter("ignore")
                 plan = Plan(file_path, **self.kwargs)
             for fx_grp_row in plan.summary:
-                row = [fx_grp_row[key] for key in COLUMNS]
-                data.append(",".join(row))
+                data.append([fx_grp_row[key] for key in COLUMNS])
         except Exception:
             pass
         return data
-
-    @property
-    def csv(self):
-        """A csv of summary data
-
-        Returns
-        -------
-        str
-            CSV of Plan.summary information
-        """
-        return "\n".join(self.summary_table)
 
 
 class Plan:

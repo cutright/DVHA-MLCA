@@ -1,8 +1,12 @@
 History
 =======
 
-v0.2.2 (2021.01.16)
+v0.2.3 (TBD)
 ------------
+ - Use csv standard library for CSV writing
+
+v0.2.2 (2021.01.16)
+-------------------
  - Multiprocessing support
 
 v0.2.1 (2021.01.15)

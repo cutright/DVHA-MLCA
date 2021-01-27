@@ -11,5 +11,6 @@ omit =
     mlca/_version.py
     mlca/main.py
     tests/*
+    run_tests.py
     docs/*
     venv/*
