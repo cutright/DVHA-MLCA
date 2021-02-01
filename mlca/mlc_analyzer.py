@@ -814,7 +814,7 @@ class Beam:
                 )
                 / self.meter_set
             )
-        return 0
+        return np.array([0])
 
 
 class ControlPoint:
